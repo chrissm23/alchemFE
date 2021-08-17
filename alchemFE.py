@@ -32,6 +32,6 @@ for root, subdirs, files in os.walk(dir_simulations):
 
 #u_kns = [u_kns[]] # Subsample uncorrelated data in case of correlations
 fe_mbar = calculate_MBAR.get_FE(u_kns) # Calculate results from MBAR using pymbar
-fe_mbar.plot_overlap()
+#fe_mbar.plot_overlap()
 [av_mbar, s_mbar] = fe_mbar.results()
 print(av_mbar, s_mbar)
