@@ -5,6 +5,7 @@ from numpy.lib.function_base import median
 from scipy.constants import k as k_B
 from scipy.constants import N_A
 import os
+import pymbar
 
 class fe_mbar:
     """Class for methods and results of MBAR"""
@@ -27,7 +28,7 @@ class fe_mbar:
     
     def get_inverseTemp(self, Temp):
         """Calculate inverse temperature in kcal/mol"""
-        self.beta = k_B*Temp*N_A/4184
+        self.beta = 4184/(k_B*Temp*N_A)
 
     def del_NaNs(self):
         """Return u_kns_noNaN with no NaN values and N_k list with size of positions for each samplig state"""
@@ -50,4 +51,7 @@ class fe_mbar:
         medians = np.median(self.u_kns_nonan_np, axis=1)
         stds = np.std(self.u_kns_nonan_np, axis=1)
         median_of_medians = np.median(medians+stds)
-        print(median_of_medians)
+        self.u_kns_renorm = self.u_kns_nonan_np - median_of_medians
+        self.u_kns_renorm_dimless = self.u_kns_renorm*self.beta
+        mbar_result = pymbar.MBAR(self.u_kns_renorm_dimless, self.N_k)
+        print(mbar_result.getFreeEnergyDifferences())
