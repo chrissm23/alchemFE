@@ -28,9 +28,6 @@ def parse_MBAR(dir_path):
     """Parse MBAR values from .out file"""
     file_path = dir_path + '/ti001.out' # Path to file
     u_kn = []
-    count1 = False
-    count2 = 0
-    T = 300
 
     # Read file and separate results
     with open(file_path, 'r') as f:
@@ -40,23 +37,17 @@ def parse_MBAR(dir_path):
         for line in lines:
             if (line.strip() == '------------------------------------------------------------------------------') and (mbar_section == True):
                 mbar_section = False
-                if count1 == True:
-                    count1 = False
-                else:
-                    u_kn.append(u_n)
-                    count2 += 1
+                u_kn.append(u_n)
                 u_n = []
             if mbar_section == True:
                 if line.split('=')[1].strip() != '****************':
-                    u_n.append(float(line.split('=')[1].strip())/k_B*T)
+                    u_n.append(float(line.split('=')[1].strip()))
                 else:
                     u_n.append(np.NaN)
-                    count1 = True
             if line.strip() == 'MBAR Energy analysis:':
                 mbar_section = True
 
     u_kn_np = np.asarray(u_kn)
-    print(count2)
     return u_kn_np.T
 
 

@@ -1,10 +1,9 @@
 import numpy as np
 import matplotlib.pyplot as plt
-from numpy.core.fromnumeric import var
-import pymbar
 import os
 
 class ti:
+    """Class for methods and results of TI"""
     def __init__(self, dVdls, windows) -> None:
         self.dVdls = dVdls
         self.windows = windows
@@ -23,8 +22,9 @@ class ti:
     def plot_time_series(self):
         """Function to get plot of time series of dVdl"""
         dVdls_concatenated = np.concatenate(self.dVdls)
-        plt.plot(dVdls_concatenated)
-        plt.savefig('TI_dVdl.pdf')
+        fig_tseries, ax_tseries = plt.subplots()
+        ax_tseries.plot(dVdls_concatenated)
+        fig_tseries.savefig('TI_dVdl.pdf')
 
     def results(self):
         """Calculate numerical integration and error propagation"""
@@ -41,3 +41,13 @@ class ti:
         error_np = np.asarray(error)
         self.Evar = error_np.sum()
         return [self.Eav, np.sqrt(self.Evar)]
+
+    def plot_trapz(self):
+        """Plot numerical integration curve"""
+        windows_np = np.asarray(self.windows)
+        avs_np = np.asarray(self.avs)
+        vars_np = np.asarray(self.vars)
+        fig_trapz, ax_trapz = plt.subplots()
+        ax_trapz.errorbar(windows_np, avs_np, yerr=np.sqrt(vars_np), color='red', ls='--', marker='o', capsize=5, capthick=1, ecolor='black')
+        ax_trapz.fill_between(windows_np, avs_np, y2=0)
+        fig_trapz.savefig('TI_trapz.pdf')
