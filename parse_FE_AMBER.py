@@ -40,10 +40,12 @@ def parse_MBAR(dir_path):
                 u_kn.append(u_n)
                 u_n = []
             if mbar_section == True:
-                if line.split('=')[1].strip() != '****************':
-                    u_n.append(float(line.split('=')[1].strip()))
-                else:
+                if line.split('=')[1].strip() == '****************':
                     u_n.append(np.NaN)
+                elif float(line.split('=')[1].strip()) > 0:
+                    u_n.append(np.NaN)
+                else:
+                    u_n.append(float(line.split('=')[1].strip()))
             if line.strip() == 'MBAR Energy analysis:':
                 mbar_section = True
 
