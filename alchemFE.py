@@ -37,4 +37,4 @@ print("Calculating DeltaG from MBAR...")
 data_mbar = FE_MBAR.fe_mbar(u_kns, windows, Temp)
 [av_mbar, s_mbar] = data_mbar.get_freeEnergy()
 
-print(av_mbar, s_mbar)
+print(f'DeltaG = {av_mbar} pm {s_mbar}')

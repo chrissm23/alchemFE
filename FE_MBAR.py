@@ -76,6 +76,8 @@ class fe_mbar:
         self.u_kns_renorm_dimless = self.u_kns_renorm*self.beta
         mbar_result = pymbar.MBAR(self.u_kns_renorm_dimless, self.N_k)
         results = mbar_result.getFreeEnergyDifferences(return_dict=True, return_theta=True)
-        print(results['Delta_f'])
-        print(results['dDelta_f'])
-        print(results['Theta'])
+        #print(results['Delta_f'])
+        #print(results['dDelta_f'])
+        #print(results['Theta'])
+
+        return results['Delta_f'][0,-1], results['dDelta_f'][0,-1]
