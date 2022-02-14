@@ -1,7 +1,5 @@
 import numpy as np
 import matplotlib.pyplot as plt
-from numpy.core.numeric import indices
-from numpy.lib.function_base import median
 from scipy.constants import k as k_B
 from scipy.constants import N_A
 import os
@@ -20,9 +18,7 @@ class fe_mbar:
         self.overlap = None
         self.beta = None
         self.u_kns_nonan_np = None
-        self.u_kns_renorm = None
-        self.u_kns_renorm_dimless = None
-        self.u_kns_nonan_screened = None
+        self.u_kns_nonan_np_dimless = None
         self.N_k = []
 
         self.get_inverseTemp(Temp)
@@ -46,37 +42,13 @@ class fe_mbar:
             self.N_k.append(u_n_nonan.shape[1])
         self.u_kns_nonan_np = np.concatenate(u_kns_nonan, axis=1)
 
-    def hampel(self):
-        """Use hampel identifies to each row of the array to delete columns with outliers"""
-        list_outliers = []
-        N_k_cummulative = np.cumsum(self.N_k)
-        for i in range(self.u_kns_nonan_np.shape[0]):
-            data_median = np.median(self.u_kns_nonan_np[i,:])
-            mad = np.median(np.absolute(self.u_kns_nonan_np[i,:] - data_median))
-            deviation = np.absolute(self.u_kns_nonan_np[i,:] - data_median)
-            for j in range(len(deviation)):
-                if deviation[j] > 10*mad:
-                    if not j in list_outliers:
-                        list_outliers.append(j)
-                        window = np.count_nonzero(N_k_cummulative < j)
-                        self.N_k[window] -= 1
-        self.u_kns_nonan_screened = np.delete(self.u_kns_nonan_np, obj=list_outliers, axis=1)
-
     def get_freeEnergy(self):
         """Use pymbar to get free energy differences and their uncertainties"""
         self.del_NaNs()
-        #self.hampel()
-        fig_test, ax_test = plt.subplots()
-        ax_test.scatter(np.arange(len(self.u_kns_nonan_np[0,:])), self.u_kns_nonan_np[0,:], s=0.5)
-        fig_test.savefig('test_timeseries.pdf')
-        medians = np.median(self.u_kns_nonan_np, axis=1)
-        stds = np.std(self.u_kns_nonan_np, axis=1)
-        median_of_medians = np.median(medians+stds)
-        self.u_kns_renorm = self.u_kns_nonan_np - median_of_medians
-        self.u_kns_renorm_dimless = self.u_kns_renorm*self.beta
-        mbar_result = pymbar.MBAR(self.u_kns_renorm_dimless, self.N_k)
+        self.u_kns_nonan_np_dimless = self.u_kns_nonan_np*self.beta
+        mbar_result = pymbar.MBAR(self.u_kns_nonan_np_dimless, self.N_k)
         results = mbar_result.getFreeEnergyDifferences(return_dict=True, return_theta=True)
-        #print(results['Delta_f'])
+        print(results['Delta_f'])
         #print(results['dDelta_f'])
         #print(results['Theta'])
 
